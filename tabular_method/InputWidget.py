@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import *
 from qtpy import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import *
 from PIWidget import PIWidget
+from Minterm import Minterm
 
 class InputWidget(QWidget):
 
@@ -27,17 +28,17 @@ class InputWidget(QWidget):
 
         hLayout1 = QHBoxLayout()
         mLabel = QLabel("minterm : ")
-        mEdit = QLineEdit("1,2,3,4,5")
+        self.mEdit = QLineEdit("1,2,3,4,5")
 
         hLayout1.addWidget(mLabel)
-        hLayout1.addWidget(mEdit)
+        hLayout1.addWidget(self.mEdit)
 
         hLayout2 = QHBoxLayout()
         dLabel = QLabel("don' care :" )
-        dEdit = QLineEdit("6,7")
+        self.dEdit = QLineEdit("6,7")
 
         hLayout2.addWidget(dLabel)
-        hLayout2.addWidget(dEdit)
+        hLayout2.addWidget(self.dEdit)
 
 
         nextBtn = QPushButton("입력")
@@ -54,7 +55,27 @@ class InputWidget(QWidget):
         self.setLayout(vLayout)
 
     def next_btn_clicked(self):
-        self.thisWindow = PIWidget()
+        # todo : 유효성검사
+
+        if self.mEdit.text() == '':
+            QMessageBox.information(
+                self, '알림', "값을 입력해주세요!",
+                QMessageBox.Yes)
+            return
+        m = self.mEdit.text().split(',')
+        d = self.dEdit.text().split(',')
+
+        data =[]
+        for i in range(len(m)):
+            # Minterm, isDontCare, isCombined
+            data.append((Minterm([int(m[i])]),True, False))
+
+        for i in range(len(d)):
+            data.append((Minterm([int(d[i])]),False, False))
+
+        data = sorted(data, key=lambda x: x[0].num1)
+
+        self.thisWindow = PIWidget(data)
         self.thisWindow.show()
 
 if __name__ == '__main__':
