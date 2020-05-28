@@ -17,11 +17,11 @@ class Minterm:
 
     def __init__(self, numbers):
         self.numbers = numbers
-        self.binary = self.getBinary()
-        self.num1 = self.getNum1()
+        self.binary = self.__getBinary()
+        self.num1 = self.__getNum1()
 
     # 01-0 형태로 반환
-    def getBinary(self):
+    def __getBinary(self):
         if len(self.numbers)==0:
             return ''
         if len(self.numbers)==1:
@@ -40,7 +40,7 @@ class Minterm:
             isSame = True
             for j in range(1,len(binArr)):
                 if t != binArr[j][i]:
-                    isSame=False
+                    isSame = False
                     break
 
             if isSame:
@@ -50,16 +50,22 @@ class Minterm:
         return result
 
     # # of 1s
-    def getNum1(self):
-        if self.getBinary() != '':
+    def __getNum1(self):
+        if self.binary != '':
             self.num1 = self.binary.count('1')
         return self.num1
 
     #  minterm 가능하면 추가
     def combineNum(self, number):
-        self.numbers.append(number)
-        self.binary = self.getBinary()
-        self.num1 = self.getNum1()
+        if type(number) is list:
+            self.numbers = self.numbers + number
+        elif type(number) is int:
+            self.numbers.append(number)
+        else:
+            return
+        self.numbers.sort()
+        self.binary = self.__getBinary()
+        self.num1 = self.__getNum1()
 
     def __str__(self):
         return str(self.numbers) +" " + self.binary

@@ -5,12 +5,13 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import *
 from qtpy import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import *
+from PatrickWidget import PatrickWidget
 
 class EPIWidget(QWidget):
 
-    def __init__(self, piTableValue=None):
+    def __init__(self, data):
         super(EPIWidget, self).__init__()
-        self.piTableValue = piTableValue
+        self.data = data
         self.init_ui()
 
     def init_ui(self):
@@ -50,7 +51,7 @@ class EPIWidget(QWidget):
         self.setLayout(vLayout)
 
     def next_btn_clicked(self):
-        self.thisWindow = EPIWidget()
+        self.thisWindow = PatrickWidget()
         self.thisWindow.show()
 
 if __name__ == '__main__':

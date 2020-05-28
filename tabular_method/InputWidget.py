@@ -68,10 +68,10 @@ class InputWidget(QWidget):
         data =[]
         for i in range(len(m)):
             # Minterm, isDontCare, isCombined
-            data.append((Minterm([int(m[i])]),True, False))
+            data.append([Minterm([int(m[i])]),True, False])
 
         for i in range(len(d)):
-            data.append((Minterm([int(d[i])]),False, False))
+            data.append([Minterm([int(d[i])]),False, False])
 
         data = sorted(data, key=lambda x: x[0].num1)
 
