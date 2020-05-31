@@ -10,10 +10,13 @@ import copy
 
 class PIWidget(QWidget):
 
-    def __init__(self, data):
+    def __init__(self, data, mintermList, dontcareList):
+
         super(PIWidget, self).__init__()
         self.isFinish=False
         self.data = data
+        self.mintermList = mintermList
+        self.dontcareList = dontcareList
         self.init_ui()
 
     def init_ui(self):
@@ -44,7 +47,6 @@ class PIWidget(QWidget):
         self.setLayout(vLayout)
 
     def set_table(self, table, data):
-
         table.setColumnCount(4)
         table.setRowCount(len(data))
         table.setHorizontalHeaderLabels(["# of 1s", "Minterm", "Binary","Combined"])
@@ -64,13 +66,14 @@ class PIWidget(QWidget):
 
     def next_btn_clicked(self):
         if self.isFinish:
-            self.thisWindow = EPIWidget(self.data)
+            self.thisWindow = EPIWidget(self.data, self.mintermList, self.dontcareList)
             self.thisWindow.show()
-        else :
+        else:
             tmp = self.find_pi(self.data)
             self.set_table(self.piTable2, tmp)
             self.set_table(self.piTable1, self.data)
-            self.data = tmp
+            if not self.isFinish:
+                self.data = tmp
 
     def find_pi(self, data):
         self.isFinish=True
@@ -84,6 +87,7 @@ class PIWidget(QWidget):
                     t = copy.deepcopy(data[i])
                     t[0].combineNum(data[j][0].numbers)
                     self.data[i][2] = True
+                    self.data[j][2] = True
                     t[2]=False
                     result.append(t)
 
@@ -108,13 +112,16 @@ class PIWidget(QWidget):
     def __get_hd(self, bin1, bin2):
         result=0
         for i in range(len(bin1)):
-            if bin1[i] != bin2[i] and bin1[i] != '-' and bin2[i] != '-':
+            if bin1[i] != bin2[i]:
                 result += 1
+
         return result
+
 
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = PIWidget()
     ex.show()
+
     sys.exit(app.exec_())

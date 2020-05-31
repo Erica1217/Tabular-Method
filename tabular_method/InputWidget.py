@@ -75,7 +75,7 @@ class InputWidget(QWidget):
 
         data = sorted(data, key=lambda x: x[0].num1)
 
-        self.thisWindow = PIWidget(data)
+        self.thisWindow = PIWidget(data,m,d)
         self.thisWindow.show()
 
 if __name__ == '__main__':
