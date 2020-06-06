@@ -66,6 +66,8 @@ class PIWidget(QWidget):
 
     def next_btn_clicked(self):
         if self.isFinish:
+            for i in range(len(self.data)):
+                self.data[i][0].setName("P"+str(i+1))
             self.thisWindow = EPIWidget(self.data, self.mintermList, self.dontcareList)
             self.thisWindow.show()
         else:

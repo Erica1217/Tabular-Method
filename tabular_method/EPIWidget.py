@@ -95,10 +95,15 @@ class EPIWidget(QWidget):
         return result
 
     def set_epilist_table(self, table):
-        table.setColumnCount(len(self.mintermList))
+        table.setColumnCount(len(self.tableHeaderList)+1)
         table.setRowCount(len(self.epiList))
-        # for i in range(len(self.epiList)):
-        # item = QTableWidgetItem('v' if epi_data[i][j] else '')
+        table.setColumnWidth(0,150)
+        table.setHorizontalHeaderLabels([""] + self.tableHeaderList)
+        print(self.epiList)
+        for i in range(len(self.epiList)):
+            # item = QTableWidgetItem(str(self.epiList[i][0]))
+            # table.setItem(i,0,QTableWidgetItem())
+            table.setItem(i,0,QTableWidgetItem(self.epiList[i][0].getName()+" = "+str(self.epiList[i][0])))
 
 
     def set_table(self, table, data, epi_data):
@@ -108,14 +113,15 @@ class EPIWidget(QWidget):
 
         table.setColumnWidth(0,60)
         for i in range(1,len(self.tableHeaderList)+1):
-            table.setColumnWidth(i ,40)
+        table.setColumnWidth(0, 90)
+        for i in range(1, len(self.tableHeaderList) + 1):
+            table.setColumnWidth(i, 40)
 
-        for i in range(len(data)):
-            pi_item = QTableWidgetItem(data[i][0].binary)
+        for i in range(0,len(data)):
+            pi_item = QTableWidgetItem( data[i][0].getName()+ " = " + data[i][0].binary)
             pi_item.setTextAlignment(Qt.AlignCenter)
 
             isEPI = self.isCoveredPIList[i] == 1
-            print(self.isCoveredPIList)
 
             table.setItem(i,0, pi_item)
 
@@ -185,7 +191,7 @@ class EPIWidget(QWidget):
         for i in range(len(currentData)):
             for j in range(len(currentData)):
 
-                if self.isCoveredPIList[i]==0 and self.isCoveredPIList[j]==0 and i != j:
+                if self.isCoveredPIList[i] == 0 and self.isCoveredPIList[j] == 0 and i != j:
                     for k in range(len(currentData[0])):
                         if currentData[j][k]==1 and currentData[i][k]==0:
                             break
