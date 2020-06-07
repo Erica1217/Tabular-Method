@@ -5,53 +5,50 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import *
 from qtpy import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import *
+from Monomial import Monomial
 
 class PatrickWidget(QWidget):
 
-    def __init__(self, data):
+    def __init__(self, data, uncoveredMinterm, NEPIList):
         super(PatrickWidget, self).__init__()
         self.data = data
+        self.uncoveredMinterm = uncoveredMinterm
+        self.NEPIList = NEPIList
+
         self.init_ui()
 
     def init_ui(self):
         self.resize(1000, 400)
 
-        vLayout = QVBoxLayout()
-        titleLabel = QLabel("EPI TABLE")
-        titleLabel.setAlignment(Qt.AlignCenter)
-        titleLabel.setFont(QtGui.QFont("Arial Rounded MT Bold", 20))
+    def petrick_method(self):
+        polynomial = []
+        # todo nepi List length가 1이면 바로 리턴가능
+        # 첫 괄호와 두번째 괄호 곱셈
+        p = []
+        for i in range(len(self.NEPIList[0])):
+            for j in range(len(self.NEPIList[1])):
+                m = Monomial(self.NEPIList[0][i])
+                m.add_pi(self.NEPIList[1][j])
+                p.append()
 
-        hLayout = QHBoxLayout()
+        polynomial.append(p)
 
-        self.piTable1 = QTableWidget()
-        self.piTable2 = QTableWidget()
+        for i in range(1,len(self.NEPIList)):
+            p = []
+            for j in range(len(self.NEPIList[0])):
+                p += list(map(lambda x: x.add_pi(), polynomial[i-1]))
 
-        self.piTable1.setColumnCount(4)
-        self.piTable1.setRowCount(10)
-        self.piTable1.setHorizontalHeaderLabels(["PI","10","11"])
+            polynomial.append(p)
 
-        self.piTable2.setColumnCount(4)
-        self.piTable2.setRowCount(10)
-        self.piTable2.setHorizontalHeaderLabels(["PI", "10", "11"])
 
-        nextLabel = QLabel("->")
+        # for i in range(len(self.NEPIList)):
+        #     for j in range(len(self.NEPIList[i])):
 
-        hLayout.addWidget(self.piTable1)
-        hLayout.addWidget(nextLabel)
-        hLayout.addWidget(self.piTable2)
 
-        nextBtn = QPushButton("다음")
-        nextBtn.clicked.connect(self.next_btn_clicked)
-
-        vLayout.addWidget(titleLabel)
-        vLayout.addLayout(hLayout)
-        vLayout.addWidget(nextBtn)
-
-        self.setLayout(vLayout)
+        return
 
     def next_btn_clicked(self):
-        # self.thisWindow = EPIWidget()
-        self.thisWindow.show()
+        return
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
