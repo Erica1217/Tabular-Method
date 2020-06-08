@@ -28,14 +28,14 @@ class InputWidget(QWidget):
 
         hLayout1 = QHBoxLayout()
         mLabel = QLabel("minterm : ")
-        self.mEdit = QLineEdit("1,2,3,4,5")
+        self.mEdit = QLineEdit("0,2,5,6,7,8,10,12,13,14,15")
 
         hLayout1.addWidget(mLabel)
         hLayout1.addWidget(self.mEdit)
 
         hLayout2 = QHBoxLayout()
         dLabel = QLabel("don' care :" )
-        self.dEdit = QLineEdit("6,7")
+        self.dEdit = QLineEdit("")
 
         hLayout2.addWidget(dLabel)
         hLayout2.addWidget(self.dEdit)
@@ -63,7 +63,9 @@ class InputWidget(QWidget):
                 QMessageBox.Yes)
             return
         m = self.mEdit.text().split(',')
-        d = self.dEdit.text().split(',')
+        d= []
+        if len(self.dEdit.text())>0 :
+            d = self.dEdit.text().split(',')
 
         data =[]
         for i in range(len(m)):

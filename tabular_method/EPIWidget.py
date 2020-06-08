@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import *
 from qtpy import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import *
 from PatrickWidget import PatrickWidget
+from ResultWidget import ResultWidget
 
 class EPIWidget(QWidget):
 
@@ -14,7 +15,7 @@ class EPIWidget(QWidget):
         self.data = data
         self.mintermList = mintermList
         self.dontcareList = dontcareList
-        self.tableHeaderList = sorted(mintermList + dontcareList)
+        self.tableHeaderList = sorted(mintermList + dontcareList, key=int)
         self.isCoveredMintermList = [False for i in range(len(self.tableHeaderList))]
         # 0 : 커버되지 않음, 1 : epi, 2: epi 아님
         self.isCoveredPIList = [0 for i in range(len(self.data))]
@@ -24,6 +25,7 @@ class EPIWidget(QWidget):
         self.status = 0 # 0:get_epi / 1:column_dominance / 2:row_dominance
 
         self.isFinished=False
+        self.isChanged=True
         self.init_ui()
 
     def init_ui(self):
@@ -48,8 +50,8 @@ class EPIWidget(QWidget):
         hLayout.addWidget(nextLabel)
         hLayout.addWidget(self.piTable2)
 
-        nextBtn = QPushButton("다음")
-        nextBtn.clicked.connect(self.next_btn_clicked)
+        self.nextBtn = QPushButton("다음")
+        self.nextBtn.clicked.connect(self.next_btn_clicked)
 
         self.epiListView = QTableWidget()
         self.set_epilist_table(self.epiListView)
@@ -57,26 +59,57 @@ class EPIWidget(QWidget):
         vLayout.addWidget(titleLabel)
         vLayout.addLayout(hLayout)
         vLayout.addWidget(self.epiListView)
-        vLayout.addWidget(nextBtn)
+        vLayout.addWidget(self.nextBtn)
 
         self.setLayout(vLayout)
 
     def next_btn_clicked(self):
         if self.isFinished:
-            self.thisWindow = PatrickWidget(self.data)
+            self.thisWindow = ResultWidget(self.data)
             self.thisWindow.show()
             return
 
         self.set_table(self.piTable1, self.data, self.epi_table_data)
         if self.status == 0:
+            self.isChanged = False
             self.get_epi(self.epi_real_data)
             self.status=1
+
         elif self.status == 1:
             self.epi_real_data = self.check_column_dominance(self.epi_real_data)
             self.status = 2
+
         elif self.status == 2:
             self.epi_real_data=self.check_row_dominacnce(self.epi_real_data)
             self.status = 0
+
+            if not self.isChanged:
+                uncoverdMintermList=[]
+                NEPIList=[]
+
+                # 커버해야하는 minterm들을 체크
+                for i in range(len(self.isCoveredMintermList)):
+                    if not self.isCoveredMintermList[i] and self.tableHeaderList[i] not in self.dontcareList:
+
+                        # 해당 minterm이 어떤 pi에 커버되는지 체크
+                        mintermList=[]
+                        for j in range(len(self.data)):
+                            if self.isCoveredPIList[j]==0 and int(self.tableHeaderList[i]) in self.data[j][0].numbers:
+                                mintermList.append(self.data[j][0])
+
+                        uncoverdMintermList.append(self.tableHeaderList[i])
+                        NEPIList.append(mintermList)
+
+                self.thisWindow = PatrickWidget(self.data, uncoverdMintermList, NEPIList)
+                self.thisWindow.show()
+                return
+
+        self.isFinished = True
+
+        for i in range(len(self.isCoveredMintermList)):
+            if not self.isCoveredMintermList[i] and self.tableHeaderList[i] not in self.dontcareList :
+                self.isFinished = False
+                break
 
         self.set_table(self.piTable2, self.data, self.epi_table_data)
         self.set_epilist_table(self.epiListView)
@@ -95,11 +128,10 @@ class EPIWidget(QWidget):
         return result
 
     def set_epilist_table(self, table):
-        table.setColumnCount(len(self.tableHeaderList)+1)
+        table.setColumnCount(1)
         table.setRowCount(len(self.epiList))
         table.setColumnWidth(0,150)
-        table.setHorizontalHeaderLabels([""] + self.tableHeaderList)
-        print(self.epiList)
+        table.setHorizontalHeaderLabels(["EPI List"])
         for i in range(len(self.epiList)):
             # item = QTableWidgetItem(str(self.epiList[i][0]))
             # table.setItem(i,0,QTableWidgetItem())
@@ -109,10 +141,8 @@ class EPIWidget(QWidget):
     def set_table(self, table, data, epi_data):
         table.setColumnCount(len(self.tableHeaderList)+1)
         table.setRowCount(len(data)+1)
-        table.setHorizontalHeaderLabels(self.tableHeaderList)
+        table.setHorizontalHeaderLabels([""]+self.tableHeaderList)
 
-        table.setColumnWidth(0,60)
-        for i in range(1,len(self.tableHeaderList)+1):
         table.setColumnWidth(0, 90)
         for i in range(1, len(self.tableHeaderList) + 1):
             table.setColumnWidth(i, 40)
@@ -145,7 +175,7 @@ class EPIWidget(QWidget):
             count = sum(row[i] for row in currentData)
             if count == 1: # column count가 1이면
                 for j in range(len(currentData)):
-
+                    self.isChanged=True
                     #  column count가 1인 minterm을 포함하는 PI를 찾음
                     if currentData[j][i] == 1:
                         self.isCoveredMintermList[i]=True
@@ -153,13 +183,10 @@ class EPIWidget(QWidget):
                         currentData[j]=[0 for i in range(len(self.tableHeaderList))] # 0으로 초기화
 
                         #  해당 PI가 가지고 있는 minterm들도 모두 cover된 것으로 체크
-                        # print(self.data[j][0].numbers)
-                        # print(self.tableHeaderList)
                         for k in range(len(self.data[j][0].numbers)):
                             idx = self.tableHeaderList.index(str(self.data[j][0].numbers[k]))
                             self.isCoveredMintermList[idx] = True
                         self.epiList.append(self.data[j])
-                        print(self.data[j][0])
                         break
 
         return
@@ -175,9 +202,9 @@ class EPIWidget(QWidget):
                         if currentData[k][j] == 1 and currentData[k][i] == 0:
                             break
                     else: #j가 superset
-                        # print(i,j,"c d")
                         self.isCoveredMintermList[i] = True
                         updateCover.append(i)
+                        self.isChanged=True
 
 
         for i in range(len(updateCover)):
@@ -199,6 +226,7 @@ class EPIWidget(QWidget):
                         # print(i,j,"rd")
                         self.isCoveredPIList[j] = 2
                         updateCover.append(j)
+                        self.isChanged = True
 
         emptyList = [0 for i in range(len(self.tableHeaderList))]
         for i in range(len(updateCover)):
