@@ -38,23 +38,6 @@ class PatrickWidget(QWidget):
     def petrick_method(self):
         polynomial = []
         # todo nepi List length가 1이면 바로 리턴가능
-        # 첫 괄호와 두번째 괄호 곱셈
-
-        # uncoveredMintermDick = dict()
-        # print(self.NEPIList)
-        # for i in range(len(self.NEPIList)):
-        #     # print(self.NEPIList[i],"*")
-        #     for j in range(len(self.NEPIList[i].numbers)):
-        #         if self.NEPIList[i].numbers[j] not in uncoveredMintermDick:
-        #             uncoveredMintermDick[self.NEPIList[i].numbers[j]] = []
-        #
-        #         uncoveredMintermDick[self.NEPIList[i].numbers[j]].append(self.NEPIList[i].getName())
-        #
-        # uncoveredMintermList =[]
-        # # dict -> list
-        # for key, value in uncoveredMintermDick.iteritems():
-        #     temp = [key, value]
-        #     uncoveredMintermList.append(temp)
 
         p = []
         for i in range(len(self.NEPIList[0])):
@@ -74,17 +57,36 @@ class PatrickWidget(QWidget):
 
                 # cur = []
                 for k in range(len(polynomial[i-1])):
-                    s = polynomial[i-1][k].copy()
-                    s.add(self.NEPIList[i][j].getName())
+                    s = set(list(polynomial[i-1][k])+[self.NEPIList[i][j].getName()])
                     p.append(s)
                 # p += cur
             polynomial.append(p)
 
-        print(polynomial[len(self.NEPIList)-1])
-        # polynomial = polynomial[len(self.NEPIList)-1]
+        polynomial = polynomial[len(self.NEPIList)-1]
+        deduplicate = set(map(lambda x: frozenset(x), polynomial))
+        print(polynomial)
+        print(deduplicate)
+        print(len(polynomial), len(deduplicate))
 
-        for i in range(len(polynomial)):
-            print(polynomial[i])
+        deduplicate = list(deduplicate)
+        deduplicate.sort(key=lambda x : len(x))
+
+        idx = 0
+        while len(deduplicate)>idx:
+
+            # subset 제거
+            deleteList=[]
+            for i in range(idx+1, len(deduplicate)):
+                if deduplicate[idx].issubset(deduplicate[i]):
+                    deleteList.append(deduplicate[i])
+            # 삭제
+            for i in range(len(deleteList)):
+                deduplicate.remove(deleteList[i])
+
+            idx += 1
+
+        for i in range(len(deduplicate)):
+            print(deduplicate[i])
 
         return
 
