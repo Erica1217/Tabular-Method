@@ -26,6 +26,13 @@ class InputWidget(QWidget):
         label1.setFont(QtGui.QFont("Arial Rounded MT Bold", 20))
         label2.setFont(QtGui.QFont("Arial Rounded MT Bold", 10))
 
+        hLayout0 = QHBoxLayout()
+        sLabel = QLabel("input size : ")
+        self.sEdit = QLineEdit("4")
+
+        hLayout0.addWidget(sLabel)
+        hLayout0.addWidget(self.sEdit)
+
         hLayout1 = QHBoxLayout()
         mLabel = QLabel("minterm : ")
         self.mEdit = QLineEdit("0,2,5,6,7,8,10,12,13,14,15")
@@ -47,6 +54,7 @@ class InputWidget(QWidget):
         vLayout.addWidget(label1)
         vLayout.addWidget(label2)
         vLayout.setSpacing(1)
+        vLayout.addLayout(hLayout0)
         vLayout.addLayout(hLayout1)
         vLayout.addLayout(hLayout2)
         vLayout.addSpacing(3)
@@ -57,11 +65,13 @@ class InputWidget(QWidget):
     def next_btn_clicked(self):
         # todo : 유효성검사
 
-        if self.mEdit.text() == '':
+        if self.mEdit.text() == '' or self.sEdit.text()== '':
             QMessageBox.information(
                 self, '알림', "값을 입력해주세요!",
                 QMessageBox.Yes)
             return
+
+        Minterm.MAX_COUNT = int(self.sEdit.text())
         m = self.mEdit.text().split(',')
         d= []
         if len(self.dEdit.text())>0 :

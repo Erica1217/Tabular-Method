@@ -5,18 +5,19 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import *
 from qtpy import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import *
+from ResultWidget import ResultWidget
 from Monomial import Monomial
 
 class PatrickWidget(QWidget):
 
-    def __init__(self, data, uncoveredMinterm, NEPIList):
+    def __init__(self, data, uncoveredMinterm, NEPIList ,EPIList):
         super(PatrickWidget, self).__init__()
         self.data = data
         self.uncoveredMinterm = uncoveredMinterm
+        self.EPIList = EPIList
         self.NEPIList = NEPIList
 
         self.init_ui()
-        self.petrick_method()
 
     def init_ui(self):
         self.resize(1000, 400)
@@ -27,6 +28,12 @@ class PatrickWidget(QWidget):
 
         hLayout = QHBoxLayout()
 
+        beforeLabel = QLabel(self.cvt_mintermlist_to_str(self.NEPIList))
+        resultLabel = QLabel(self.petrick_method())
+
+        hLayout.addWidget(beforeLabel)
+        hLayout.addWidget(resultLabel)
+
         self.nextBtn = QPushButton("next")
         self.nextBtn.clicked.connect(self.next_btn_clicked)
 
@@ -34,6 +41,35 @@ class PatrickWidget(QWidget):
         vLayout.addLayout(hLayout)
         vLayout.addWidget(self.nextBtn)
         self.setLayout(vLayout)
+
+    def cvt_mintermlist_to_str(self, lst):
+        result=""
+        for i in range(len(lst)):
+            result+="("
+            for j in range(len(lst[i])):
+                result = result+lst[i][j].getName()
+                if(j!=len(lst[i])-1):
+                    result+="+"
+            result+=")"
+
+        result+="="
+        return result
+
+    def cvt_petricklist_to_str(self, lst):
+        result=""
+        for i in range(len(lst)):
+            result+="("
+            for j in range(len(lst[i])):
+                result = result+lst[i][j]
+                if(j!=len(lst[i])-1):
+                    result+="*"
+
+            if i != len(lst)-1:
+                result+=")+"
+            else:
+                result+=")"
+
+        return result
 
     def petrick_method(self):
         polynomial = []
@@ -52,14 +88,11 @@ class PatrickWidget(QWidget):
         for i in range(1,len(self.NEPIList)):
             p = []
             for j in range(len(self.NEPIList[i])):
-                # print(polynomial[i-1])
                 # 각 단항식에 추가
 
-                # cur = []
                 for k in range(len(polynomial[i-1])):
                     s = set(list(polynomial[i-1][k])+[self.NEPIList[i][j].getName()])
                     p.append(s)
-                # p += cur
             polynomial.append(p)
 
         polynomial = polynomial[len(self.NEPIList)-1]
@@ -85,12 +118,19 @@ class PatrickWidget(QWidget):
 
             idx += 1
 
+        result =""
+
+        # list[list[]] 형태로 변환
+        deduplicate = list(map(lambda x:list(x), deduplicate))
         for i in range(len(deduplicate)):
+            deduplicate[i].sort(key= lambda x: int(x[1:]))
             print(deduplicate[i])
 
-        return
+        return self.cvt_petricklist_to_str(deduplicate)
 
     def next_btn_clicked(self):
+        self.thisWindow = ResultWidget(self.data)
+        self.thisWindow.show()
         return
 
 if __name__ == '__main__':

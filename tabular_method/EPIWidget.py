@@ -100,7 +100,7 @@ class EPIWidget(QWidget):
                         uncoverdMintermList.append(self.tableHeaderList[i])
                         NEPIList.append(mintermList)
 
-                self.thisWindow = PatrickWidget(self.data, uncoverdMintermList, NEPIList)
+                self.thisWindow = PatrickWidget(self.data, uncoverdMintermList, NEPIList,self.epiList)
                 self.thisWindow.show()
                 return
 

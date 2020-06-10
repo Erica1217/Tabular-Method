@@ -51,7 +51,7 @@ class PIWidget(QWidget):
         table.setRowCount(len(data))
         table.setHorizontalHeaderLabels(["# of 1s", "Minterm", "Binary","Combined"])
         table.setColumnWidth(0, 50)
-        table.setColumnWidth(2, 50)
+        table.setColumnWidth(2, 70)
 
         for i in range(len(data)):
             minterm , isDontcare, isCombined = data[i]
@@ -95,15 +95,14 @@ class PIWidget(QWidget):
 
         dedup_result=[]
         for i in range(len(result)-1):
-            is_dedup=False
             for j in range(len(dedup_result)):
-                if result[i][0].numbers == dedup_result[j].numbers:
-                    is_dedup=True
+                if result[i][0].binary == dedup_result[j][0].binary:
                     break
-            if not is_dedup:
-                dedup_result.append(result[i][0])
 
-        dedup_result = sorted(result, key=lambda x:x[0].num1)
+            else :
+                dedup_result.append(result[i])
+
+        dedup_result = sorted(dedup_result, key=lambda x:x[0].num1)
 
         if self.isFinish:
             self.nextBtn.setText('find EPI')
