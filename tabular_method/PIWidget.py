@@ -13,7 +13,7 @@ class PIWidget(QWidget):
     def __init__(self, data, mintermList, dontcareList):
 
         super(PIWidget, self).__init__()
-        self.isFinish=False
+        self.isFinish = False
         self.data = data
         self.mintermList = mintermList
         self.dontcareList = dontcareList
@@ -101,13 +101,13 @@ class PIWidget(QWidget):
             for j in range(len(dedup_result)):
                 if result[i][0].binary == dedup_result[j][0].binary:
                     break
-
             else :
                 dedup_result.append(result[i])
 
+        # combined 체크되지 않은것 추가
         for i in range(len(data)):
-            if not self.data[i][1]:
-                dedup_result.append(self.data[i][0])
+            if not self.data[i][2]:
+                dedup_result.append(self.data[i])
 
         dedup_result = sorted(dedup_result, key=lambda x:x[0].num1)
 

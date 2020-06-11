@@ -30,8 +30,17 @@ class PatrickWidget(QWidget):
         beforeLabel = QLabel(self.cvt_mintermlist_to_str(self.NEPIList))
         resultLabel = QLabel(self.petrick_method())
 
+
         hLayout.addWidget(beforeLabel)
         hLayout.addWidget(resultLabel)
+
+        piTable = QTableWidget()
+        piTable.setColumnCount(2)
+        piTable.setRowCount(len(self.data))
+
+        for i in range(len(self.data)):
+            piTable.setItem(i, 0, QTableWidgetItem(str(self.data[i][0].name)))
+            piTable.setItem(i, 1, QTableWidgetItem(str(self.data[i][0].numbers)))
 
         self.nextBtn = QPushButton("next")
         self.nextBtn.setText("Finish")
@@ -39,6 +48,7 @@ class PatrickWidget(QWidget):
 
         vLayout.addWidget(titleLabel)
         vLayout.addLayout(hLayout)
+        vLayout.addWidget(piTable)
         vLayout.addWidget(self.nextBtn)
 
         self.setLayout(vLayout)

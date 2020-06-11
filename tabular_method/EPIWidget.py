@@ -123,13 +123,16 @@ class EPIWidget(QWidget):
         self.set_table(self.piTable2, self.data, self.epi_table_data)
         self.set_epilist_table(self.epiListView)
 
+
     def cvt_epi_data(self, data):
         result = []
 
         for i in range(len(data)):
             tmp = []
             for j in range(len(self.tableHeaderList)):
-                if int(self.tableHeaderList[j]) in data[i][0].numbers:
+                if int(self.tableHeaderList[j]) in data[i][0].numbers and \
+                        self.tableHeaderList[j] not in self.dontcareList :
+
                     tmp.append(1)
                 else:
                     tmp.append(0)
@@ -149,7 +152,7 @@ class EPIWidget(QWidget):
 
     def set_table(self, table, data, epi_data):
         table.setColumnCount(len(self.tableHeaderList)+1)
-        table.setRowCount(len(data)+1)
+        table.setRowCount(len(data))
         table.setHorizontalHeaderLabels([""]+self.tableHeaderList)
 
         table.setColumnWidth(0, 90)
@@ -172,7 +175,9 @@ class EPIWidget(QWidget):
                 # epi가 아닌 cover된 것이나 dominate되는 것들은 회색으로 표시
                 elif self.isCoveredMintermList[j] or self.isCoveredPIList[i] == 2:
                     item.setBackground(QtGui.QColor(100,100,150))
-
+                # dontcare는 초록색으로 표시
+                elif self.tableHeaderList[j] in self.dontcareList:
+                    item.setBackground(QtGui.QColor(2, 205, 57))
                 # 아직 cover되지 않은 것은 흰 색으로 표시
                 else:
                     item.setBackground(QtGui.QColor(255, 255, 255))
@@ -183,20 +188,24 @@ class EPIWidget(QWidget):
         for i in range(len(currentData[0])):
             count = sum(row[i] for row in currentData)
 
-            if count == 1 and self.isCoveredMintermList[i]==False and self.tableHeaderList[i] not in  self.dontcareList: # column count가 1이면
-                print(self.tableHeaderList[i])
+            if count == 1 and self.isCoveredMintermList[i]==False and \
+                    self.tableHeaderList[i] not in  self.dontcareList: # column count가 1이면
                 for j in range(len(currentData)):
                     self.isChanged=True
                     #  column count가 1인 minterm을 포함하는 PI를 찾음
                     if currentData[j][i] == 1:
                         self.isCoveredMintermList[i]=True
                         self.isCoveredPIList[j] = 1 # epi 찾음
-                        currentData[j]=[0 for i in range(len(self.tableHeaderList))] # 0으로 초기화
+                        # currentData[j]=[0 for i in range(len(self.tableHeaderList))] # 0으로 초기화
 
                         #  해당 PI가 가지고 있는 minterm들도 모두 cover된 것으로 체크
                         for k in range(len(self.data[j][0].numbers)):
                             idx = self.tableHeaderList.index(str(self.data[j][0].numbers[k]))
                             self.isCoveredMintermList[idx] = True
+
+                            for k2 in range(len(currentData)):
+                                currentData[k2][idx] = 0
+
                         self.epiList.append(self.data[j])
                         break
 
@@ -208,7 +217,9 @@ class EPIWidget(QWidget):
         for i in range(len(currentData[0])):
             for j in range(len(currentData[0])):
 
-                if not self.isCoveredMintermList[j] and i != j: #
+                if not self.isCoveredMintermList[j] and i != j and \
+                    self.tableHeaderList[i] not in self.dontcareList and \
+                    self.tableHeaderList[j] not in self.dontcareList: #
                     for k in range(len(currentData)):
                         if currentData[k][j] == 1 and currentData[k][i] == 0:
                             break
@@ -216,7 +227,6 @@ class EPIWidget(QWidget):
                         self.isCoveredMintermList[i] = True
                         updateCover.append(i)
                         self.isChanged=True
-
 
         for i in range(len(updateCover)):
             for j in range(len(currentData)):
@@ -229,12 +239,11 @@ class EPIWidget(QWidget):
         for i in range(len(currentData)):
             for j in range(len(currentData)):
 
-                if self.isCoveredPIList[i] == 0 and self.isCoveredPIList[j] == 0 and i != j:
+                if self.isCoveredPIList[i] == 0 and self.isCoveredPIList[j] == 0 and i != j :
                     for k in range(len(currentData[0])):
-                        if currentData[j][k]==1 and currentData[i][k]==0:
+                        if currentData[j][k] == 1 and currentData[i][k]==0:
                             break
                     else:
-                        # print(i,j,"rd")
                         self.isCoveredPIList[j] = 2
                         updateCover.append(j)
                         self.isChanged = True
