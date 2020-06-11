@@ -35,11 +35,14 @@ class PatrickWidget(QWidget):
         hLayout.addWidget(resultLabel)
 
         self.nextBtn = QPushButton("next")
+        self.nextBtn.setText("Finish")
+        self.nextBtn.setStyleSheet("background-color: blue")
         self.nextBtn.clicked.connect(self.next_btn_clicked)
 
         vLayout.addWidget(titleLabel)
         vLayout.addLayout(hLayout)
         vLayout.addWidget(self.nextBtn)
+
         self.setLayout(vLayout)
 
     def cvt_mintermlist_to_str(self, lst):

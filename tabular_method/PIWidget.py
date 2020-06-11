@@ -17,6 +17,7 @@ class PIWidget(QWidget):
         self.data = data
         self.mintermList = mintermList
         self.dontcareList = dontcareList
+        self.notCombinedList= []
         self.init_ui()
 
     def init_ui(self):
@@ -83,8 +84,10 @@ class PIWidget(QWidget):
         for i in range(len(data)-1):
             for j in range(i+1, len(data)):
                 arr_tmp = data[i][0].numbers + data[j][0].numbers
+
                 if self.__get_hd(data[i][0].binary, data[j][0].binary) <= 1 and \
-                        len(arr_tmp) == len(set(arr_tmp)):
+                        len(arr_tmp) == len(set(arr_tmp)) and \
+                         len(data[i][0].numbers) == len(data[j][0].numbers):
                     self.isFinish=False
                     t = copy.deepcopy(data[i])
                     t[0].combineNum(data[j][0].numbers)
@@ -94,7 +97,7 @@ class PIWidget(QWidget):
                     result.append(t)
 
         dedup_result=[]
-        for i in range(len(result)-1):
+        for i in range(len(result)):
             for j in range(len(dedup_result)):
                 if result[i][0].binary == dedup_result[j][0].binary:
                     break
@@ -102,7 +105,13 @@ class PIWidget(QWidget):
             else :
                 dedup_result.append(result[i])
 
+        for i in range(len(data)):
+            if not self.data[i][1]:
+                dedup_result.append(self.data[i][0])
+
+
         dedup_result = sorted(dedup_result, key=lambda x:x[0].num1)
+
 
         if self.isFinish:
             self.nextBtn.setText('find EPI')

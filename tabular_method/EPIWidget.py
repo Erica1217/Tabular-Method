@@ -36,6 +36,8 @@ class EPIWidget(QWidget):
         titleLabel.setAlignment(Qt.AlignCenter)
         titleLabel.setFont(QtGui.QFont("Arial Rounded MT Bold", 20))
 
+        self.currentLabel = QLabel("EPI 찾기")
+
         hLayout = QHBoxLayout()
 
         self.piTable1 = QTableWidget()
@@ -57,6 +59,7 @@ class EPIWidget(QWidget):
         self.set_epilist_table(self.epiListView)
 
         vLayout.addWidget(titleLabel)
+        vLayout.addWidget(self.currentLabel)
         vLayout.addLayout(hLayout)
         vLayout.addWidget(self.epiListView)
         vLayout.addWidget(self.nextBtn)
@@ -65,21 +68,26 @@ class EPIWidget(QWidget):
 
     def next_btn_clicked(self):
         if self.isFinished:
-            self.thisWindow = ResultWidget(self.data)
-            self.thisWindow.show()
+            self.nextBtn.setText("Finish")
+            self.nextBtn.setStyleSheet("background-color: blue")
+            # self.thisWindow = ResultWidget(self.data)
+            # self.thisWindow.show()
             return
 
         self.set_table(self.piTable1, self.data, self.epi_table_data)
         if self.status == 0:
+            self.currentLabel.setText("column dominance 찾기")
             self.isChanged = False
             self.get_epi(self.epi_real_data)
             self.status=1
 
         elif self.status == 1:
+            self.currentLabel.setText("row dominance 찾기")
             self.epi_real_data = self.check_column_dominance(self.epi_real_data)
             self.status = 2
 
         elif self.status == 2:
+            self.currentLabel.setText("EPI 찾기")
             self.epi_real_data=self.check_row_dominacnce(self.epi_real_data)
             self.status = 0
 
@@ -90,15 +98,17 @@ class EPIWidget(QWidget):
                 # 커버해야하는 minterm들을 체크
                 for i in range(len(self.isCoveredMintermList)):
                     if not self.isCoveredMintermList[i] and self.tableHeaderList[i] not in self.dontcareList:
-
                         # 해당 minterm이 어떤 pi에 커버되는지 체크
                         mintermList=[]
                         for j in range(len(self.data)):
-                            if self.isCoveredPIList[j]==0 and int(self.tableHeaderList[i]) in self.data[j][0].numbers:
+                            if self.isCoveredPIList[j] == 0 and int(self.tableHeaderList[i]) in self.data[j][0].numbers:
                                 mintermList.append(self.data[j][0])
 
                         uncoverdMintermList.append(self.tableHeaderList[i])
                         NEPIList.append(mintermList)
+
+                self.nextBtn.setText("Patrick method")
+                self.nextBtn.setStyleSheet("background-color: blue")
 
                 self.thisWindow = PatrickWidget(self.data, uncoverdMintermList, NEPIList,self.epiList)
                 self.thisWindow.show()
@@ -173,7 +183,9 @@ class EPIWidget(QWidget):
     def get_epi(self, currentData):
         for i in range(len(currentData[0])):
             count = sum(row[i] for row in currentData)
-            if count == 1: # column count가 1이면
+
+            if count == 1 and self.isCoveredMintermList[i]==False and self.tableHeaderList[i] not in  self.dontcareList: # column count가 1이면
+                print(self.tableHeaderList[i])
                 for j in range(len(currentData)):
                     self.isChanged=True
                     #  column count가 1인 minterm을 포함하는 PI를 찾음
