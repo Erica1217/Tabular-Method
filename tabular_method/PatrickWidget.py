@@ -5,7 +5,6 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import *
 from qtpy import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import *
-from ResultWidget import ResultWidget
 from Monomial import Monomial
 
 class PatrickWidget(QWidget):
@@ -37,7 +36,6 @@ class PatrickWidget(QWidget):
         self.nextBtn = QPushButton("next")
         self.nextBtn.setText("Finish")
         self.nextBtn.setStyleSheet("background-color: blue")
-        self.nextBtn.clicked.connect(self.next_btn_clicked)
 
         vLayout.addWidget(titleLabel)
         vLayout.addLayout(hLayout)
@@ -131,10 +129,6 @@ class PatrickWidget(QWidget):
 
         return self.cvt_petricklist_to_str(deduplicate)
 
-    def next_btn_clicked(self):
-        self.thisWindow = ResultWidget(self.data)
-        self.thisWindow.show()
-        return
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

@@ -109,9 +109,7 @@ class PIWidget(QWidget):
             if not self.data[i][1]:
                 dedup_result.append(self.data[i][0])
 
-
         dedup_result = sorted(dedup_result, key=lambda x:x[0].num1)
-
 
         if self.isFinish:
             self.nextBtn.setText('find EPI')

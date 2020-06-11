@@ -6,7 +6,6 @@ from PyQt5.QtWidgets import *
 from qtpy import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import *
 from PatrickWidget import PatrickWidget
-from ResultWidget import ResultWidget
 
 class EPIWidget(QWidget):
 
