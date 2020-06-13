@@ -1,7 +1,6 @@
 import sys
 
 from PyQt5 import Qt
-from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import *
 from qtpy import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import *
@@ -189,7 +188,7 @@ class EPIWidget(QWidget):
             count = sum(row[i] for row in currentData)
 
             if count == 1 and self.isCoveredMintermList[i]==False and \
-                    self.tableHeaderList[i] not in  self.dontcareList: # column count가 1이면
+                    self.tableHeaderList[i] not in self.dontcareList: # column count가 1이면
                 for j in range(len(currentData)):
                     self.isChanged=True
                     #  column count가 1인 minterm을 포함하는 PI를 찾음

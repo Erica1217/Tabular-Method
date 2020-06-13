@@ -84,7 +84,6 @@ class PatrickWidget(QWidget):
 
     def petrick_method(self):
         polynomial = []
-        # todo nepi List length가 1이면 바로 리턴가능
 
         p = []
         for i in range(len(self.NEPIList[0])):
@@ -117,7 +116,6 @@ class PatrickWidget(QWidget):
 
         idx = 0
         while len(deduplicate)>idx:
-
             # subset 제거
             deleteList=[]
             for i in range(idx+1, len(deduplicate)):
@@ -128,8 +126,6 @@ class PatrickWidget(QWidget):
                 deduplicate.remove(deleteList[i])
 
             idx += 1
-
-        result =""
 
         # list[list[]] 형태로 변환
         deduplicate = list(map(lambda x:list(x), deduplicate))
